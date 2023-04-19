@@ -4,8 +4,7 @@
  * @brief Initialization sequence for the VS1053 board. 
  * 
  */
-void VS1053::init()
-{
+void VS1053::init() {
     pinMode(XCS_PIN, OUTPUT);
     pinMode(XDCS_PIN, OUTPUT);
     pinMode(DREQ_PIN, INPUT);
@@ -37,8 +36,7 @@ void VS1053::init()
 
 }
 
-void VS1053::write_reg(const uint8_t reg, const uint16_t data)
-{
+void VS1053::write_reg(const uint8_t& reg, const uint16_t& data) const {
     if(digitalRead(DREQ_PIN))
     {
         digitalWrite(XCS_PIN, LOW);
@@ -55,8 +53,7 @@ void VS1053::write_reg(const uint8_t reg, const uint16_t data)
     }
 }
 
-uint16_t VS1053::read_reg(const uint8_t reg)
-{
+uint16_t VS1053::read_reg(const uint8_t& reg) const {
     if(reg > 0x0F) 
         return 0xFFFF;
 
@@ -71,8 +68,7 @@ uint16_t VS1053::read_reg(const uint8_t reg)
     return data;
 }
 
-void VS1053::testSPI()
-{
+void VS1053::testSPI() const {
     Serial.println("Testing SPI:");
     Serial.println("Writing to register...");
     write_reg(REG_VOL, 0xCAFE);
@@ -85,4 +81,9 @@ void VS1053::testSPI()
         Serial.println("SPI is not functional. Check hardware connection.\n");
     }
     return;
+}
+
+void VS1053::wait4DREQ() const {
+    while(!digitalRead(DREQ_PIN))
+        yield();
 }

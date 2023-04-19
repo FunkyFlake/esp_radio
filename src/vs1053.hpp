@@ -11,8 +11,8 @@ public:
         XCS_PIN(xcs_pin), XDCS_PIN(xdcs_pin), DREQ_PIN(dreq_pin) { }
 
     void init();
-    void write_reg(const uint8_t reg, const uint16_t data);
-    uint16_t read_reg(const uint8_t reg);
+    void write_reg(const uint8_t& reg, const uint16_t& data) const;
+    uint16_t read_reg(const uint8_t& reg) const;
     
 
 private:
@@ -46,7 +46,8 @@ private:
     const uint8_t READ_CMD  = 0b0000'0011;
     const uint8_t WRITE_CMD = 0b0000'0010;
 
-    void testSPI();
+    void testSPI() const;
+    void wait4DREQ() const;
 };
 
 #endif
