@@ -1,7 +1,7 @@
 #include "vs1053.hpp"
 
 /**
- * @brief Initialization sequence for the VS1053 board.
+ * @brief Initialization sequence for the VS1053 board. 
  * 
  */
 void VS1053::init()
@@ -22,21 +22,22 @@ void VS1053::init()
     digitalWrite(XDCS_PIN, HIGH);
     delay(150);
 
+    // If everything is connected correctly then DREQ should be high after toggling the cs pins
     if(digitalRead(DREQ_PIN))
         Serial.println("DREQ HIGH");
     else
         Serial.println("DREQ LOW. Something is wrong -> Check connections and restart.");
+    
     SPI.begin();
-    SPI.beginTransaction(spi_settings);
-    uint16_t vol = read_ctrl(REG_VOL);
-    Serial.println("Volume " + String(vol));
-    Serial.println("Writing 0xCAFE");
-    write_ctrl(REG_VOL, 0xCAFE);
-    vol = read_ctrl(REG_VOL);
-    Serial.println("Volume " + String(vol));
+    
+    // Check SPI connection
+    SPI.beginTransaction(spi_settings);   
+    testSPI();
+    SPI.endTransaction();
+
 }
 
-void VS1053::write_ctrl(const uint8_t reg, const uint16_t data)
+void VS1053::write_reg(const uint8_t reg, const uint16_t data)
 {
     if(digitalRead(DREQ_PIN))
     {
@@ -54,7 +55,7 @@ void VS1053::write_ctrl(const uint8_t reg, const uint16_t data)
     }
 }
 
-uint16_t VS1053::read_ctrl(const uint8_t reg)
+uint16_t VS1053::read_reg(const uint8_t reg)
 {
     if(reg > 0x0F) 
         return 0xFFFF;
@@ -68,4 +69,20 @@ uint16_t VS1053::read_ctrl(const uint8_t reg)
     digitalWrite(XCS_PIN, HIGH);
     
     return data;
+}
+
+void VS1053::testSPI()
+{
+    Serial.println("Testing SPI:");
+    Serial.println("Writing to register...");
+    write_reg(REG_VOL, 0xCAFE);
+    Serial.println("Reading from register...");
+    uint16_t vol = read_reg(REG_VOL);
+    if(vol == 0xCAFE)
+        Serial.println("SPI is functional.\n");
+    else
+    {
+        Serial.println("SPI is not functional. Check hardware connection.\n");
+    }
+    return;
 }
