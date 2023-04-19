@@ -11,6 +11,7 @@ void VS1053::init()
     pinMode(DREQ_PIN, INPUT);
     
     //Cycle control and data chip select pins (active low)
+    Serial.println("Initializing VS1053");
     digitalWrite(XCS_PIN, HIGH);
     digitalWrite(XDCS_PIN, HIGH);
     delay(150);
