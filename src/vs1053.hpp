@@ -11,6 +11,9 @@ public:
         XCS_PIN(xcs_pin), XDCS_PIN(xdcs_pin), DREQ_PIN(dreq_pin) { }
 
     void init();
+    void write_ctrl(const uint16_t data);
+    uint16_t read_ctrl(const uint16_t data);
+    
 
 private:
     uint8_t XCS_PIN;
@@ -19,13 +22,14 @@ private:
     
     SPISettings spi_slow{200000, MSBFIRST, SPI_MODE0};
     SPISettings spi_fast{4000000, MSBFIRST, SPI_MODE0};
+    SPISettings spi_settings = spi_slow;
 
     // Internal SCI Registers 
     const uint8_t MODE        = 0x00;
     const uint8_t STATUS      = 0x01;
     const uint8_t BASS        = 0x02;
     const uint8_t CLOCKF      = 0x03;
-    const uint8_t DECODE_TIME = 0x04;        // current decoded time in full seconds
+    const uint8_t DECODE_TIME = 0x04;       
     const uint8_t AUDATA      = 0x05;
     const uint8_t WRAM        = 0x06;
     const uint8_t WRAMADDR    = 0x07;
