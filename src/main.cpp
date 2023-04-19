@@ -3,6 +3,7 @@
 void setup() {
   // Initialize serial communication at 9600 baud
   Serial.begin(9600);
+  digitalWrite(0,1);
 }
 
 void loop() {
