@@ -17,10 +17,13 @@ public:
     typedef enum {MONO = 0, STEREO = 1} channels_t;
     void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 
-    void set_clock();
-    void set_mode(const uint16_t &mode);
+    void set_clock() const;
+    void set_mode(const uint16_t &mode) const;
 
-    void send_data(uint8_t *buffer, uint16_t bufsize);
+    void send_data(uint8_t *buffer, uint16_t bufsize) const;
+    
+    void write_wram(const uint16_t &address, const uint16_t &data) const;
+    void set_mp3_mode() const;
 
 private:
     uint8_t XCS_PIN;
@@ -30,6 +33,8 @@ private:
     SPISettings spi_slow{200'000, MSBFIRST, SPI_MODE0};
     SPISettings spi_fast{4'000'000, MSBFIRST, SPI_MODE0};
     SPISettings spi_settings = spi_slow;
+
+    uint16_t SCI_MODE = SM_DINEW | SM_STREAM;
 
     // Internal SCI Registers 
     static constexpr uint8_t REG_MODE        = 0x00;
@@ -88,8 +93,14 @@ private:
     // SDI Constants
     static constexpr uint16_t DATA_BLOCK_SIZE = 32;
 
+    // GPIO register constants (necessary for switch form midi to mp3)
+    static constexpr uint16_t GPIO_DDR   = 0xC017;
+    static constexpr uint16_t GPIO_IDATA = 0xC018;
+    static constexpr uint16_t GPIO_ODATA = 0xC019;
+    
     void testSPI() const;
     void wait4DREQ() const;
+    void software_reset() const;
 };
 
 #endif

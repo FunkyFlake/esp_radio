@@ -30,6 +30,8 @@ void VS1053::init() {
     SPI.begin();
     testSPI();
 
+    set_mp3_mode();
+
     uint16_t samplerate = 44100;
     set_audioformat(samplerate, STEREO);
     
@@ -38,7 +40,7 @@ void VS1053::init() {
     spi_settings = spi_fast;
     testSPI();
 
-    set_mode(SM_LINE1 | SM_DINEW | SM_STREAM);
+    set_mode(SCI_MODE);
     return;
 }
 
@@ -119,7 +121,7 @@ void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stere
     }
 
     uint16_t data = samplerate | stereo;
-    //write_reg(REG_AUDATA, data);
+    write_reg(REG_AUDATA, data);
     Serial.print("VS1053 audio settings have been set to AUDATA=0x");
     Serial.println(read_reg(REG_AUDATA), HEX);
     return;
@@ -129,21 +131,21 @@ void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stere
  * @brief Set clock multiplier to 3.5, no SC_ADD allowed. Then set SPI clock to 4MHz.
  * 
  */
-void VS1053::set_clock() {
+void VS1053::set_clock() const {
     write_reg(REG_CLOCKF, SC_MULT_3_5 | SC_ADD_NO); 
     Serial.print("VS1053 clock multiplier has been set to CLOCKF=0x");
     Serial.println(read_reg(REG_CLOCKF), HEX);
     return;
 }
 
-void VS1053::set_mode(const uint16_t &mode) {
+void VS1053::set_mode(const uint16_t &mode) const {
     write_reg(REG_MODE, mode);
     Serial.print("VS1053 mode has been set to MODE=0x");
     Serial.println(read_reg(REG_MODE), HEX);
     return;
 }
 
-void VS1053::send_data(uint8_t *buffer, uint16_t bufsize) {
+void VS1053::send_data(uint8_t *buffer, uint16_t bufsize) const {
     uint16_t packetlen;
     
     SPI.beginTransaction(spi_settings);
@@ -169,3 +171,26 @@ void VS1053::send_data(uint8_t *buffer, uint16_t bufsize) {
     Serial.println("Buffer was transmitted to VS1053.");
     return;    
 }
+
+void VS1053::write_wram(const uint16_t &address, const uint16_t &data) const {
+    write_reg(REG_WRAMADDR, address);
+    write_reg(REG_WRAM, data);
+}
+
+void VS1053::set_mp3_mode() const {
+    // Some boards start in MIDI mode, this reverses the problem 
+    // see https://github.com/baldram/ESP_VS1053_Library/blob/master/src/VS1053.cpp
+    // and http://bajdi.com/lcsoft-vs1053-mp3-module/#comment-33773
+    write_wram(GPIO_DDR, 3); 
+    write_wram(GPIO_ODATA, 0);
+    delay(150);
+    software_reset();
+}
+
+void VS1053::software_reset() const {
+    write_reg(REG_MODE, SCI_MODE | SM_RESET);
+    delay(50);
+    wait4DREQ(); // DREQ will be high after reset is done
+    Serial.println("Software reset of VS1053 is complete.");
+}
+
