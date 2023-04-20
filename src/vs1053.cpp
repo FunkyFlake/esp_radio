@@ -43,8 +43,10 @@ void VS1053::init() {
 }
 
 void VS1053::write_reg(const uint8_t& reg, const uint16_t& data) const {
-    if(!digitalRead(DREQ_PIN))
-        Serial.println("VS1053 is not ready for new data.");
+    if(!digitalRead(DREQ_PIN)) {
+        Serial.println("VS1053 SCI is not ready for new data.");
+        return;
+    }
 
     SPI.beginTransaction(spi_settings);
     digitalWrite(XCS_PIN, LOW);
@@ -62,8 +64,10 @@ void VS1053::write_reg(const uint8_t& reg, const uint16_t& data) const {
 }
 
 uint16_t VS1053::read_reg(const uint8_t& reg) const {
-    if(reg > 0x0F || !digitalRead(DREQ_PIN)) 
+    if(reg > 0x0F || !digitalRead(DREQ_PIN)) {
+        Serial.println("VS1053 SCI is not ready for next command.");
         return 0xFFFF;
+    } 
     
     SPI.beginTransaction(spi_settings);
     digitalWrite(XCS_PIN, LOW);
@@ -115,7 +119,7 @@ void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stere
     }
 
     uint16_t data = samplerate | stereo;
-    write_reg(REG_AUDATA, data);
+    //write_reg(REG_AUDATA, data);
     Serial.print("VS1053 audio settings have been set to AUDATA=0x");
     Serial.println(read_reg(REG_AUDATA), HEX);
     return;
@@ -137,4 +141,31 @@ void VS1053::set_mode(const uint16_t &mode) {
     Serial.print("VS1053 mode has been set to MODE=0x");
     Serial.println(read_reg(REG_MODE), HEX);
     return;
+}
+
+void VS1053::send_data(uint8_t *buffer, uint16_t bufsize) {
+    uint16_t packetlen;
+    
+    SPI.beginTransaction(spi_settings);
+    digitalWrite(XDCS_PIN, LOW);
+
+    while(bufsize > 0) {
+        wait4DREQ();        
+        
+        packetlen = bufsize;
+
+        if(packetlen > DATA_BLOCK_SIZE) {
+            packetlen = DATA_BLOCK_SIZE;
+        }
+
+        SPI.transfer(buffer, packetlen);
+        buffer += packetlen;
+        bufsize -= packetlen;
+    }
+        
+    digitalWrite(XDCS_PIN, HIGH);
+    SPI.endTransaction();
+    
+    Serial.println("Buffer was transmitted to VS1053.");
+    return;    
 }
