@@ -12,8 +12,10 @@ public:
 
     void init();
     void write_reg(const uint8_t& reg, const uint16_t& data) const;
-    uint16_t read_reg(const uint8_t& reg) const;
-    
+    uint16_t read_reg(const uint8_t& reg) const; 
+
+    typedef enum {MONO = 0, STEREO = 1} channels_t;
+    void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 
 private:
     uint8_t XCS_PIN;

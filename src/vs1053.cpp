@@ -34,6 +34,9 @@ void VS1053::init() {
     testSPI();
     SPI.endTransaction();
 
+    uint16_t samplerate = 44100;
+    set_audioformat(samplerate, STEREO);
+    
     return;
 }
 
@@ -82,7 +85,7 @@ void VS1053::testSPI() const {
  
     Serial.println("Reading from register...");
     uint16_t vol = read_reg(REG_VOL);
-    
+
     if(vol == 0xCAFE)
         Serial.println("SPI is functional.\n");
     else
@@ -95,5 +98,18 @@ void VS1053::testSPI() const {
 void VS1053::wait4DREQ() const {
     while(!digitalRead(DREQ_PIN))
         yield();
+    return;
+}
+
+void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const {
+    if(samplerate > 48000) {
+        Serial.println("Samplerate must be below 48kHz.\n");
+        return;
+    }
+
+    uint16_t data = samplerate | stereo;
+    write_reg(REG_AUDATA, data);
+
+    //Serial.println("AUDATA = " + String(read_reg(REG_AUDATA)));
     return;
 }
