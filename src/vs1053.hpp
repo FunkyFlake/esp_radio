@@ -17,6 +17,9 @@ public:
     typedef enum {MONO = 0, STEREO = 1} channels_t;
     void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 
+    void set_clock();
+    void set_mode(const uint16_t &mode);
+
 private:
     uint8_t XCS_PIN;
     uint8_t XDCS_PIN;
@@ -47,6 +50,38 @@ private:
     // SCI instructions
     const uint8_t READ_CMD  = 0b0000'0011;
     const uint8_t WRITE_CMD = 0b0000'0010;
+
+    // CLOCKF register bitmasks
+    const uint16_t SC_MULT_1   = 0x0000;
+    const uint16_t SC_MULT_2   = 0x2000;
+    const uint16_t SC_MULT_3   = 0x6000;
+    const uint16_t SC_MULT_2_5 = 0x4000;
+    const uint16_t SC_MULT_3_5 = 0x8000;
+    const uint16_t SC_MULT_4   = 0xA000;
+    const uint16_t SC_MULT_4_5 = 0xC000;
+    const uint16_t SC_MULT_5   = 0xE000;
+    
+    const uint16_t SC_ADD_NO  = 0x0000;
+    const uint16_t SC_ADD_1   = 0x0800;
+    const uint16_t SC_ADD_1_5 = 0x1000;
+    const uint16_t SC_ADD_2   = 0x1800;
+    
+    // MODE register bitmasks
+    const uint16_t SM_DIFF          = 0x0001;
+    const uint16_t SM_LAYER12       = 0x0002;
+    const uint16_t SM_RESET         = 0x0004;
+    const uint16_t SM_CANCEL        = 0x0008;
+    const uint16_t SM_EARSPEAKER_LO = 0x0010;
+    const uint16_t SM_TESTS         = 0x0020;
+    const uint16_t SM_STREAM        = 0x0040;
+    const uint16_t SM_EARSPEAKER_HI = 0x0080;
+    const uint16_t SM_DACT          = 0x0100;
+    const uint16_t SM_DIORD         = 0x0200;
+    const uint16_t SM_DISHARE       = 0x0400;
+    const uint16_t SM_DINEW         = 0x0800;
+    const uint16_t SM_ADPCM         = 0x1000;
+    const uint16_t SM_LINE1         = 0x4000;
+    const uint16_t SM_CLK_RANGE     = 0x8000;
 
     void testSPI() const;
     void wait4DREQ() const;

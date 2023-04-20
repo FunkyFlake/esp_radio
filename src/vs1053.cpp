@@ -28,42 +28,44 @@ void VS1053::init() {
         Serial.println("DREQ LOW. Something is wrong -> Check connections and restart.");
     
     SPI.begin();
-    
-    // Check SPI connection
-    SPI.beginTransaction(spi_settings);   
     testSPI();
-    SPI.endTransaction();
 
     uint16_t samplerate = 44100;
     set_audioformat(samplerate, STEREO);
     
+    // Set clock multiplier and update spi settings
+    set_clock();
+    spi_settings = spi_fast;
+    testSPI();
+
+    set_mode(SM_LINE1 | SM_DINEW | SM_STREAM);
     return;
 }
 
 void VS1053::write_reg(const uint8_t& reg, const uint16_t& data) const {
-    if(digitalRead(DREQ_PIN))
-    {
-        digitalWrite(XCS_PIN, LOW);
-        
-        SPI.write(WRITE_CMD);
-        SPI.write(reg);
-        SPI.write16(data);
-        
-        wait4DREQ();        
-        
-        digitalWrite(XCS_PIN, HIGH);
-    }
-    else
-    {
+    if(!digitalRead(DREQ_PIN))
         Serial.println("VS1053 is not ready for new data.");
-    }
+
+    SPI.beginTransaction(spi_settings);
+    digitalWrite(XCS_PIN, LOW);
+    
+    SPI.write(WRITE_CMD);
+    SPI.write(reg);
+    SPI.write16(data);
+    
+    wait4DREQ();        
+    
+    digitalWrite(XCS_PIN, HIGH);
+    SPI.endTransaction();
+    
     return;
 }
 
 uint16_t VS1053::read_reg(const uint8_t& reg) const {
-    if(reg > 0x0F) 
+    if(reg > 0x0F || !digitalRead(DREQ_PIN)) 
         return 0xFFFF;
-
+    
+    SPI.beginTransaction(spi_settings);
     digitalWrite(XCS_PIN, LOW);
     
     SPI.write(READ_CMD);
@@ -73,12 +75,14 @@ uint16_t VS1053::read_reg(const uint8_t& reg) const {
     wait4DREQ();
 
     digitalWrite(XCS_PIN, HIGH);
-    
+    SPI.endTransaction();
+
     return data;
 }
 
 void VS1053::testSPI() const {
     Serial.println("Testing SPI:");
+    
  
     Serial.println("Writing to register...");
     write_reg(REG_VOL, 0xCAFE);
@@ -92,6 +96,9 @@ void VS1053::testSPI() const {
     {
         Serial.println("SPI is not functional. Check hardware connection.\n");
     }
+
+    write_reg(REG_VOL, 0x0000); 
+
     return;
 }
 
@@ -109,7 +116,25 @@ void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stere
 
     uint16_t data = samplerate | stereo;
     write_reg(REG_AUDATA, data);
+    Serial.print("VS1053 audio settings have been set to AUDATA=0x");
+    Serial.println(read_reg(REG_AUDATA), HEX);
+    return;
+}
 
-    //Serial.println("AUDATA = " + String(read_reg(REG_AUDATA)));
+/**
+ * @brief Set clock multiplier to 3.5, no SC_ADD allowed. Then set SPI clock to 4MHz.
+ * 
+ */
+void VS1053::set_clock() {
+    write_reg(REG_CLOCKF, SC_MULT_3_5 | SC_ADD_NO); 
+    Serial.print("VS1053 clock multiplier has been set to CLOCKF=0x");
+    Serial.println(read_reg(REG_CLOCKF), HEX);
+    return;
+}
+
+void VS1053::set_mode(const uint16_t &mode) {
+    write_reg(REG_MODE, mode);
+    Serial.print("VS1053 mode has been set to MODE=0x");
+    Serial.println(read_reg(REG_MODE), HEX);
     return;
 }
