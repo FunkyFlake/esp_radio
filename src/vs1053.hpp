@@ -18,7 +18,7 @@ public:
     void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 
     void set_clock() const;
-    void set_mode(const uint16_t &mode) const;
+    void set_mode(const uint16_t &mode);
 
     void send_data(uint8_t *buffer, uint16_t bufsize) const;
     
@@ -34,7 +34,7 @@ private:
     SPISettings spi_fast{4'000'000, MSBFIRST, SPI_MODE0};
     SPISettings spi_settings = spi_slow;
 
-    uint16_t SCI_MODE = SM_DINEW | SM_STREAM;
+    uint16_t sci_mode = SM_DINEW | SM_STREAM;
 
     // Internal SCI Registers 
     static constexpr uint8_t REG_MODE        = 0x00;

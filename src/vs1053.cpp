@@ -40,7 +40,7 @@ void VS1053::init() {
     spi_settings = spi_fast;
     testSPI();
 
-    set_mode(SCI_MODE);
+    set_mode(sci_mode);
     return;
 }
 
@@ -138,10 +138,11 @@ void VS1053::set_clock() const {
     return;
 }
 
-void VS1053::set_mode(const uint16_t &mode) const {
+void VS1053::set_mode(const uint16_t &mode) {
     write_reg(REG_MODE, mode);
+    sci_mode = read_reg(REG_MODE);
     Serial.print("VS1053 mode has been set to MODE=0x");
-    Serial.println(read_reg(REG_MODE), HEX);
+    Serial.println(sci_mode, HEX);
     return;
 }
 
@@ -188,7 +189,7 @@ void VS1053::set_mp3_mode() const {
 }
 
 void VS1053::software_reset() const {
-    write_reg(REG_MODE, SCI_MODE | SM_RESET);
+    write_reg(REG_MODE, sci_mode | SM_RESET);
     delay(50);
     wait4DREQ(); // DREQ will be high after reset is done
     Serial.println("Software reset of VS1053 is complete.");
