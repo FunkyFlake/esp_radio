@@ -14,6 +14,8 @@ void setup() {
   uint16_t samplerate = 44100;
   MP3.init(samplerate);
 
+  MP3.set_volume(80);
+
   MP3.playback(mp3_data, sizeof(mp3_data));
 }
 

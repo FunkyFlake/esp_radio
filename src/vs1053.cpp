@@ -268,3 +268,31 @@ void VS1053::software_reset() const {
 void VS1053::playback(uint8_t *buffer, uint16_t bufsize) const {
     send_data(buffer, bufsize);
 }
+
+/**
+ * @brief Sets the volume in the range 0 to 100%.
+ * 
+ * @param vol 0 to 100 where 100 is the max. volume.
+ */
+void VS1053::set_volume(uint8_t vol) {
+    if(vol >= 100) {
+        volume = 100;
+        vol = 0x00;
+    }
+    else {
+        volume = vol;
+        vol = map(vol, 0, 100, 0xFE, 0x00);
+    }
+    write_reg(REG_VOL, (vol << 8) | vol);
+    //Serial.print("VS1053 volume has been set to VOL=0x");
+    //Serial.println(read_reg(REG_VOL), HEX);
+}
+
+/**
+ * @brief Function to read the current volume.
+ * 
+ * @return * uint8_t volume in range 0 to 100
+ */
+uint8_t VS1053::get_volume() const {
+    return volume;
+}

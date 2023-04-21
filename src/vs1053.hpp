@@ -14,8 +14,8 @@ public:
 
 
     void playback(uint8_t *buffer, uint16_t bufsize) const;
-
-
+    void set_volume(uint8_t vol);
+    uint8_t get_volume() const;
 private:
     uint8_t XCS_PIN;
     uint8_t XDCS_PIN;
@@ -26,6 +26,7 @@ private:
     SPISettings spi_settings = spi_slow;
 
     uint16_t sci_mode = SM_DINEW | SM_STREAM;
+    uint8_t volume = 100;
 
     // Internal SCI Registers 
     static constexpr uint8_t REG_MODE        = 0x00;
