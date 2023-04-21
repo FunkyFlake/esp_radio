@@ -12,7 +12,6 @@ public:
 
     void init(uint16_t &samplerate);
 
-    typedef enum {MONO = 0, STEREO = 1} channels_t;
 
     void playback(uint8_t *buffer, uint16_t bufsize) const;
 
@@ -90,6 +89,9 @@ private:
     static constexpr uint16_t GPIO_IDATA = 0xC018;
     static constexpr uint16_t GPIO_ODATA = 0xC019;
     
+    // Enum for set_audioformat
+    typedef enum {MONO = 0, STEREO = 1} channels_t; 
+
     void testSPI() const;
     void wait4DREQ() const;
     void software_reset() const;
