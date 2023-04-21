@@ -4,7 +4,7 @@
  * @brief Initialization sequence for the VS1053 board. 
  * 
  */
-void VS1053::init() {
+void VS1053::init(uint16_t &samplerate) {
     pinMode(XCS_PIN, OUTPUT);
     pinMode(XDCS_PIN, OUTPUT);
     pinMode(DREQ_PIN, INPUT);
@@ -32,7 +32,9 @@ void VS1053::init() {
 
     set_mp3_mode();
 
-    uint16_t samplerate = 44100;
+    if(samplerate > 48000) 
+        samplerate = 44100;
+    
     set_audioformat(samplerate, STEREO);
     
     // Set clock multiplier and update spi settings
@@ -195,3 +197,6 @@ void VS1053::software_reset() const {
     Serial.println("Software reset of VS1053 is complete.");
 }
 
+void VS1053::playback(uint8_t *buffer, uint16_t bufsize) const {
+    send_data(buffer, bufsize);
+}

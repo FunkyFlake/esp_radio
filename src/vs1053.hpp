@@ -10,20 +10,12 @@ public:
     VS1053(uint8_t xcs_pin, uint8_t xdcs_pin, uint8_t dreq_pin):
         XCS_PIN(xcs_pin), XDCS_PIN(xdcs_pin), DREQ_PIN(dreq_pin) { }
 
-    void init();
-    void write_reg(const uint8_t& reg, const uint16_t& data) const;
-    uint16_t read_reg(const uint8_t& reg) const; 
+    void init(uint16_t &samplerate);
 
     typedef enum {MONO = 0, STEREO = 1} channels_t;
-    void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 
-    void set_clock() const;
-    void set_mode(const uint16_t &mode);
+    void playback(uint8_t *buffer, uint16_t bufsize) const;
 
-    void send_data(uint8_t *buffer, uint16_t bufsize) const;
-    
-    void write_wram(const uint16_t &address, const uint16_t &data) const;
-    void set_mp3_mode() const;
 
 private:
     uint8_t XCS_PIN;
@@ -101,6 +93,14 @@ private:
     void testSPI() const;
     void wait4DREQ() const;
     void software_reset() const;
+    void send_data(uint8_t *buffer, uint16_t bufsize) const;
+    void set_clock() const;
+    void set_mode(const uint16_t &mode);
+    void write_wram(const uint16_t &address, const uint16_t &data) const;
+    void set_mp3_mode() const;
+    void write_reg(const uint8_t& reg, const uint16_t& data) const;
+    uint16_t read_reg(const uint8_t& reg) const; 
+    void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 };
 
 #endif

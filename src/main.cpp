@@ -11,9 +11,10 @@ void setup() {
   delay(5000);
 
   VS1053 MP3 = VS1053(XCS_PIN, XDCS_PIN, DREQ_PIN);   
-  MP3.init();
+  uint16_t samplerate = 44100;
+  MP3.init(samplerate);
 
-  MP3.send_data(mp3_data, sizeof(mp3_data));
+  MP3.playback(mp3_data, sizeof(mp3_data));
 }
 
 
