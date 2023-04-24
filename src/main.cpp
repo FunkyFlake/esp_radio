@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <vs1053.hpp>
-#include <mp3_example.h>
+#include <mp3_example2.h>
 
 void setup() {
   // Initialize serial communication at 9600 baud

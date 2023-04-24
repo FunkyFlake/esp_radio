@@ -13,7 +13,7 @@ public:
     void init(uint16_t &samplerate);
 
 
-    void playback(uint8_t *buffer, uint16_t bufsize) const;
+    void playback(const uint8_t *buffer, uint16_t bufsize) const;
     void set_volume(uint8_t vol);
     uint8_t get_volume() const;
 private:
@@ -96,7 +96,7 @@ private:
     void testSPI() const;
     void wait4DREQ() const;
     void software_reset() const;
-    void send_data(uint8_t *buffer, uint16_t bufsize) const;
+    void send_data(const uint8_t *buffer, uint16_t bufsize) const;
     void set_clock() const;
     void set_mode(const uint16_t &mode);
     void write_wram(const uint16_t &address, const uint16_t &data) const;

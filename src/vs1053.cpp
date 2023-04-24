@@ -195,8 +195,9 @@ void VS1053::set_mode(const uint16_t &mode) {
  * @param buffer is a pointer to the data buffer
  * @param bufsize is the size of the buffer
  */
-void VS1053::send_data(uint8_t *buffer, uint16_t bufsize) const {
+void VS1053::send_data(const uint8_t *buffer, uint16_t bufsize) const {
     uint16_t packetlen;
+    uint8_t *buf = const_cast<uint8_t*>(buffer);
     
     SPI.beginTransaction(spi_settings);
     digitalWrite(XDCS_PIN, LOW);
@@ -210,8 +211,8 @@ void VS1053::send_data(uint8_t *buffer, uint16_t bufsize) const {
             packetlen = DATA_BLOCK_SIZE;
         }
 
-        SPI.transfer(buffer, packetlen);
-        buffer += packetlen;
+        SPI.transfer(buf, packetlen);
+        buf += packetlen;
         bufsize -= packetlen;
     }
         
@@ -265,7 +266,7 @@ void VS1053::software_reset() const {
  * @param buffer is a pointer to the buffer with MP3 data.
  * @param bufsize is the size of the buffer.
  */
-void VS1053::playback(uint8_t *buffer, uint16_t bufsize) const {
+void VS1053::playback(const uint8_t *buffer, uint16_t bufsize) const {
     send_data(buffer, bufsize);
 }
 
