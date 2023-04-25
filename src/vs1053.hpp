@@ -16,6 +16,8 @@ public:
     void playback(const uint8_t *buffer, uint16_t bufsize) const;
     void set_volume(uint8_t vol);
     uint8_t get_volume() const;
+    
+    uint16_t read_reg(const uint8_t& reg) const; 
 private:
     uint8_t XCS_PIN;
     uint8_t XDCS_PIN;
@@ -25,7 +27,7 @@ private:
     SPISettings spi_fast{4'000'000, MSBFIRST, SPI_MODE0};
     SPISettings spi_settings = spi_slow;
 
-    uint16_t sci_mode = SM_DINEW | SM_STREAM;
+    uint16_t sci_mode = SM_DINEW;
     uint8_t volume = 100;
 
     // Internal SCI Registers 
@@ -102,7 +104,6 @@ private:
     void write_wram(const uint16_t &address, const uint16_t &data) const;
     void set_mp3_mode() const;
     void write_reg(const uint8_t& reg, const uint16_t& data) const;
-    uint16_t read_reg(const uint8_t& reg) const; 
     void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
 };
 

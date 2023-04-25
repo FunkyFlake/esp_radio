@@ -171,7 +171,7 @@ void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stere
  * 
  */
 void VS1053::set_clock() const {
-    write_reg(REG_CLOCKF, SC_MULT_3_5 | SC_ADD_NO); 
+    write_reg(REG_CLOCKF, SC_MULT_3 | SC_ADD_NO); 
     Serial.print("VS1053 clock multiplier has been set to CLOCKF=0x");
     Serial.println(read_reg(REG_CLOCKF), HEX);
 }
@@ -197,7 +197,6 @@ void VS1053::set_mode(const uint16_t &mode) {
  */
 void VS1053::send_data(const uint8_t *buffer, uint16_t bufsize) const {
     uint16_t packetlen;
-    uint8_t *buf = const_cast<uint8_t*>(buffer);
     
     SPI.beginTransaction(spi_settings);
     digitalWrite(XDCS_PIN, LOW);
@@ -211,8 +210,10 @@ void VS1053::send_data(const uint8_t *buffer, uint16_t bufsize) const {
             packetlen = DATA_BLOCK_SIZE;
         }
 
-        SPI.transfer(buf, packetlen);
-        buf += packetlen;
+        for(uint16_t i = 0; i < packetlen; i++) {
+            SPI.transfer(*buffer++);
+        }
+
         bufsize -= packetlen;
     }
         
