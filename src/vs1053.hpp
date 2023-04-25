@@ -16,8 +16,7 @@ public:
     void playback(const uint8_t *buffer, uint16_t bufsize) const;
     void set_volume(uint8_t vol);
     uint8_t get_volume() const;
-    
-    uint16_t read_reg(const uint8_t& reg) const; 
+
 private:
     uint8_t XCS_PIN;
     uint8_t XDCS_PIN;
@@ -105,6 +104,7 @@ private:
     void set_mp3_mode() const;
     void write_reg(const uint8_t& reg, const uint16_t& data) const;
     void set_audioformat(const uint16_t& samplerate, const channels_t& stereo) const;
+    uint16_t read_reg(const uint8_t& reg) const; 
 };
 
 #endif
