@@ -2,9 +2,10 @@
 #include <vs1053.hpp>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <mp3_example.h>
 #include <mp3_example2.h>
-#include <ESP8266mDNS.h>
+//#include <website.h>
 
 //Enter WiFi setup here:
 const char *SSID = "UPC230D88";
@@ -22,9 +23,14 @@ uint8_t mp3Buffer[32];
 
 ESP8266WebServer server(80);
 
+String station = "1";
+String website = "<html>\n<head>\n  <title>Radio Station Selection</title>\n</head>\n<body>\n  <h1>Radio Station Selection</h1>\n\n  <form action=\"/\">\n    <label for=\"station\">Select a radio station:</label>\n    <select id=\"station\" name=\"station\">\n      <option value=\"1\">Radio Station 1</option>\n      <option value=\"2\">Radio Station 2</option>\n      <option value=\"3\">Radio Station 3</option>\n      <option value=\"4\">Radio Station 4</option>\n    </select>\n    <br>\n    <input type=\"submit\" value=\"Select\">\n  </form>\n</body>\n</html>";
+
 void handleRoot() {
-  String html = "<html><body><h1>Hello from ESP8266!</h1></body></html>";
-  server.send(200, "text/html", html);
+  station = server.arg("station"); 
+  Serial.print("Station:");
+  Serial.println(station);
+  server.send(200, "text/html", website);
 }
 
 void setup() {
@@ -51,10 +57,11 @@ void setup() {
   server.begin();
   Serial.println("Web server started.");
 
-  // connect to url: http://s4-webradio.rockantenne.de/rockantenne
+  String station_urls[] = {"s3-webradio.rockantenne.de", "radiostreaming.ert.gr"};
+
   int status = 0;
   while(status != 1) {
-    status = client.connect("s3-webradio.rockantenne.de", 80);
+    status = client.connect(station_urls[0], 80);
     //status = client.connect("radiostreaming.ert.gr", 80);
   }
   Serial.println("Connected to radio station!");
