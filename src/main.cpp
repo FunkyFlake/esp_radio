@@ -27,8 +27,10 @@ ESP8266WebServer server(80);
 String newStation = "0";
 String station = "0";
 
-String station_urls[] = {"s3-webradio.rockantenne.de", "radiostreaming.ert.gr"};
-String station_paths[] = {"/rockantenne/stream/mp3", "/ert-kosmos"};
+String station_urls[] = {"s3-webradio.rockantenne.de", "radiostreaming.ert.gr", 
+                         "mp3.harmonyfm.de", "stream.antenne1.de"};
+String station_paths[] = {"/rockantenne/stream/mp3", "/ert-kosmos",
+                          "/harmonyfm/hqlivestream.mp3", "/a1stg/livestream2.mp3"};
   
 void handleRoot() {
   newStation = server.arg("station"); 
