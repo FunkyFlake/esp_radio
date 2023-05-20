@@ -1,7 +1,21 @@
 #include <Arduino.h>
 #include <vs1053.hpp>
+#include <ESP8266WiFi.h>
+//#include <ESP8266Audio.h>
+#include <AudioGeneratorMP3.h>
+#include <AudioOutputI2S.h>
 #include <mp3_example.h>
 #include <mp3_example2.h>
+
+//Enter WiFi setup here:
+const char *SSID = "UPC230D88";
+const char *PASSWORD = "WtznsWw8ffve";
+const char *STREAM = "";
+
+WiFiClient client;
+//AudioFileSourceHTTPStream *stream;
+AudioGeneratorMP3 *audio;
+AudioOutputI2S *audioOutput;
 
 constexpr uint8_t XCS_PIN = D1;
 constexpr uint8_t XDCS_PIN = D0;
@@ -18,6 +32,22 @@ void setup() {
   MP3.init(samplerate);
 
   MP3.set_volume(80);
+
+
+  WiFi.disconnect();
+  WiFi.softAPdisconnect(true);
+  WiFi.mode(WIFI_STA);
+
+  WiFi.begin(SSID, PASSWORD);
+
+  //Try forever
+  while(WiFi.status() != WL_CONNECTED){
+    Serial.println("..connecting to WiFi");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("Connected, IP address: ");
+  Serial.println(WiFi.localIP());
 }
 
 

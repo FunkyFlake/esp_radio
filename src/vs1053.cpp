@@ -9,7 +9,7 @@
  * - Rudimentary test of SPI communication 
  * - Ensures the VS1053 is in MP3 mode and not MIDI mode (includes soft reset)
  * - Sets audioformat i.e. samplerate
- * - Sets the internal clock multiplier to 3.5x 
+ * - Sets the internal clock multiplier to 3x 
  * - Switch to fast SPI speed (4MHz)
  * - Rudimentary test of SPI communication
  * - Sets initial SCI mode
@@ -167,7 +167,7 @@ void VS1053::set_audioformat(const uint16_t& samplerate, const channels_t& stere
 }
 
 /**
- * @brief Set clock multiplier to 3.5 with no SC_ADD allowed. 
+ * @brief Set clock multiplier to 3 with no SC_ADD allowed. 
  * 
  */
 void VS1053::set_clock() const {

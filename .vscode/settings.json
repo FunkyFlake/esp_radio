@@ -2,5 +2,6 @@
     "cmake.configureOnOpen": false,
     "files.associations": {
         "cstdint": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/Users/janla/Documents/ESP_Radio/esp_radio/esp_radio/.pio/libdeps/nodemcuv2/Unity"
 }
