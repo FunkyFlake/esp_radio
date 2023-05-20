@@ -11,7 +11,8 @@
         "tuple": "cpp",
         "type_traits": "cpp",
         "utility": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "string": "cpp"
     },
     "cmake.sourceDirectory": "C:/Users/janla/Documents/ESP_Radio/esp_radio/esp_radio/.pio/libdeps/nodemcuv2/Unity"
 }
