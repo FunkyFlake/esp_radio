@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <vs1053.hpp>
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 #include <mp3_example.h>
 #include <mp3_example2.h>
 #include <ESP8266mDNS.h>
@@ -18,6 +19,13 @@ constexpr uint8_t DREQ_PIN = D2;
 VS1053 MP3(XCS_PIN, XDCS_PIN, DREQ_PIN);   
 
 uint8_t mp3Buffer[32]; 
+
+ESP8266WebServer server(80);
+
+void handleRoot() {
+  String html = "<html><body><h1>Hello from ESP8266!</h1></body></html>";
+  server.send(200, "text/html", html);
+}
 
 void setup() {
   Serial.begin(9600, SERIAL_8N1);
@@ -38,6 +46,10 @@ void setup() {
   }
   Serial.print("Connected, IP address: ");
   Serial.println(WiFi.localIP());
+  
+  server.on("/", handleRoot);
+  server.begin();
+  Serial.println("Web server started.");
 
   // connect to url: http://s4-webradio.rockantenne.de/rockantenne
   int status = 0;
@@ -57,7 +69,7 @@ void loop() {
     uint8_t bytesread = client.read(mp3Buffer, 32);
     MP3.playback(mp3Buffer, bytesread);
   }
-
+  server.handleClient();
   //MP3.playback(mp3_data, sizeof(mp3_data));
   //delay(3000);
   //MP3.playback(mp3_data2, sizeof(mp3_data2));
