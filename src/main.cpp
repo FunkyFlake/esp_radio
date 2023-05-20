@@ -31,9 +31,6 @@ String website = "<html>\n<head>\n  <title>Radio Station Selection</title>\n</he
 String station_urls[] = {"s3-webradio.rockantenne.de", "radiostreaming.ert.gr"};
 String station_paths[] = {"/rockantenne/stream/mp3", "/ert-kosmos"};
   
-int status = 0;
-  
-
 void handleRoot() {
   newStation = server.arg("station"); 
   Serial.print("Station:");
@@ -43,6 +40,17 @@ void handleRoot() {
 
 int stationIdx(String &station) {
   return atoi(station.c_str());
+}
+
+void connectStation(String &stationID) {
+  client.stop();
+  int status = 0;
+  while(status != 1) {
+    status = client.connect(station_urls[stationIdx(stationID)], 80);
+  } 
+  Serial.println("Connected to radio station!");
+  // Request stream
+  client.print("GET " + String(station_paths[stationIdx(stationID)]) + " HTTP/1.1\r\nHost: " + String(station_urls[stationIdx(stationID)]) + "\r\nConnection: close\r\n\r\n");
 }
 
 void setup() {
@@ -69,30 +77,19 @@ void setup() {
   server.begin();
   Serial.println("Web server started.");
 
-  while(status != 1) {
-    status = client.connect(station_urls[stationIdx(station)], 80);
-  }
-  Serial.println("Connected to radio station!");
-  // Request stream
-  client.print("GET " + String(station_paths[stationIdx(station)]) + " HTTP/1.1\r\nHost: " + String(station_urls[stationIdx(station)]) + "\r\nConnection: close\r\n\r\n");
+  connectStation(station);
 }
 
 void loop() {
-  if (client.available() > 0)
-  {
+  if (client.available() > 0) {
     uint8_t bytesread = client.read(mp3Buffer, 32);
     MP3.playback(mp3Buffer, bytesread);
   }
+
   server.handleClient();
 
   if(station != newStation) {
-    status = 0;
-    while(status != 1) {
-      status = client.connect(station_urls[stationIdx(newStation)], 80);
-    } 
-    Serial.println("Connected to radio station!");
-    // Request stream
-    client.print("GET " + String(station_paths[stationIdx(newStation)]) + " HTTP/1.1\r\nHost: " + String(station_urls[stationIdx(newStation)]) + "\r\nConnection: close\r\n\r\n");
+    connectStation(newStation);    
     station = newStation;
   }
   //MP3.playback(mp3_data, sizeof(mp3_data));
