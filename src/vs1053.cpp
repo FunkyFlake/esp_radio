@@ -219,8 +219,6 @@ void VS1053::send_data(const uint8_t *buffer, uint16_t bufsize) const {
         
     digitalWrite(XDCS_PIN, HIGH);
     SPI.endTransaction();
-    
-    Serial.println("Buffer was transmitted to VS1053.");
 }
 
 /**
